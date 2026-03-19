@@ -83,10 +83,19 @@ func Register(ctx context.Context, systemNamespace string, cfg clientcmd.ClientC
 	// always add the systemNamespace to the systemNamespaces provided
 	opts.SystemNamespaces = append(opts.SystemNamespaces, systemNamespace)
 
-	// parse values.yaml and questions.yaml from file
-	valuesYaml, questionsYaml, err := parseValuesAndQuestions(opts.ChartContent)
-	if err != nil {
-		logrus.Fatal(err)
+	var (
+		valuesYaml, questionsYaml string
+		err                       error
+	)
+	if len(opts.ChartContent) > 0 {
+		// parse values.yaml and questions.yaml from the embedded chart when available so the registration namespace UX
+		// continues to work for the compatibility/default chart path.
+		valuesYaml, questionsYaml, err = parseValuesAndQuestions(opts.ChartContent)
+		if err != nil {
+			logrus.Fatal(err)
+		}
+	} else if opts.UsesManagedChartReference() {
+		logrus.Warn("No embedded chart content is available; registration namespace values.yaml/questions.yaml configmaps will be empty while using the approved managed chart reference")
 	}
 
 	appCtx, err := newContext(cfg, systemNamespace, opts)

@@ -20,6 +20,24 @@ questions:
   type: string
   required: false
   group: Namespaces
+- variable: helmProjectOperator.chartSource.name
+  label: Approved Project Monitoring Chart Name
+  description: Optional. Set together with repository URL and version to deploy an approved external project-monitoring chart instead of the embedded compatibility chart.
+  type: string
+  required: false
+  group: Project Monitoring Chart
+- variable: helmProjectOperator.chartSource.repo
+  label: Approved Project Monitoring Chart Repository
+  description: Optional. Helm repository URL for the approved external project-monitoring chart.
+  type: string
+  required: false
+  group: Project Monitoring Chart
+- variable: helmProjectOperator.chartSource.version
+  label: Approved Project Monitoring Chart Version
+  description: Optional. Version of the approved external project-monitoring chart to deploy.
+  type: string
+  required: false
+  group: Project Monitoring Chart
 - variable: helmProjectOperator.releaseRoleBindings.clusterRoleRefs.admin
   label: Admin ClusterRole
   description: By default, admin selects Project Owners. This can be overridden to a different ClusterRole (e.g. rt-xxxxx)

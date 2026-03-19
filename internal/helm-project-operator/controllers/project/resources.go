@@ -24,14 +24,21 @@ func (h *handler) getHelmChart(projectID string, valuesContent string, projectHe
 		jobImage = h.opts.HelmJobImage
 	}
 	releaseNamespace, releaseName := h.getReleaseNamespaceAndName(projectHelmChart)
+	spec := helmcontrollerv1.HelmChartSpec{
+		TargetNamespace: releaseNamespace,
+		JobImage:        jobImage,
+		ValuesContent:   valuesContent,
+	}
+	if h.opts.UsesManagedChartReference() {
+		spec.Chart = h.opts.ManagedChartName
+		spec.Repo = h.opts.ManagedChartRepo
+		spec.Version = h.opts.ManagedChartVersion
+	} else {
+		spec.Chart = releaseName
+		spec.ChartContent = h.opts.ChartContent
+	}
 	helmChart := helmcontrollerv1.NewHelmChart(h.systemNamespace, releaseName, helmcontrollerv1.HelmChart{
-		Spec: helmcontrollerv1.HelmChartSpec{
-			TargetNamespace: releaseNamespace,
-			Chart:           releaseName,
-			JobImage:        jobImage,
-			ChartContent:    h.opts.ChartContent,
-			ValuesContent:   valuesContent,
-		},
+		Spec: spec,
 	})
 	helmChart.SetLabels(common.GetHelmResourceLabels(projectID, projectHelmChart.Spec.HelmAPIVersion))
 	managedBy := h.opts.ControllerName

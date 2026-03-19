@@ -43,6 +43,14 @@ helmProjectOperator:
   ## User-provided values will be overwritten based on the values provided here
   valuesOverride: { }
 
+  ## chartSource selects the operator-approved chart source used for project monitoring releases.
+  ## By default, the operator deploys its embedded compatibility chart payload.
+  ## When all three fields below are set, generated HelmChart resources will reference that external chart instead.
+  chartSource:
+    name: ""
+    repo: ""
+    version: ""
+
   ## projectReleaseNamespaces are auto-generated namespaces that are created to host Helm Releases
   ## managed by this operator on behalf of a ProjectHelmChart
   projectReleaseNamespaces:

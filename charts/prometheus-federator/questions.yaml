@@ -22,19 +22,19 @@ questions:
   group: Namespaces
 - variable: helmProjectOperator.chartSource.name
   label: Approved Project Monitoring Chart Name
-  description: Optional. Set together with repository URL and version to deploy an approved external project-monitoring chart instead of the embedded compatibility chart.
+  description: Required with repository URL and version. Prometheus Federator now deploys only an approved external project-monitoring chart.
   type: string
   required: false
   group: Project Monitoring Chart
 - variable: helmProjectOperator.chartSource.repo
   label: Approved Project Monitoring Chart Repository
-  description: Optional. Helm repository URL for the approved external project-monitoring chart.
+  description: Required. Helm repository URL for the approved external project-monitoring chart.
   type: string
   required: false
   group: Project Monitoring Chart
 - variable: helmProjectOperator.chartSource.version
   label: Approved Project Monitoring Chart Version
-  description: Optional. Version of the approved external project-monitoring chart to deploy.
+  description: Required. Version of the approved external project-monitoring chart to deploy.
   type: string
   required: false
   group: Project Monitoring Chart

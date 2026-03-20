@@ -36,13 +36,13 @@ This is the current branch strategy for `rancher/prometheus-federator`, it may c
 Prometheus Federator is an operator (powered by [`rancher/helm-project-operator`](cmd/helm-project-operator/README.md) and [`rancher/charts-build-scripts`](cmd/helm-locker/README.md)) that manages deploying one or more Project Monitoring Stacks composed of the following set of resources that are scoped to project namespaces:
 - [Prometheus](https://prometheus.io/) (managed externally by [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator))
 - [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) (managed externally by [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator))
-- [Grafana](https://github.com/helm/charts/tree/master/stable/grafana) (deployed via an embedded Helm chart)
+- [Grafana](https://github.com/helm/charts/tree/master/stable/grafana) (deployed by an operator-approved project monitoring chart)
 - Default PrometheusRules and Grafana dashboards based on the collection of community-curated resources from [kube-prometheus](https://github.com/prometheus-operator/kube-prometheus/)
 - Default ServiceMonitors that watch the deployed Prometheus, Grafana, and Alertmanager
 
 A user can specify that they would like to deploy a Project Monitoring Stack by creating a `ProjectHelmChart` CR in a Project Registration Namespace (`cattle-project-<id>`) with `spec.helmApiVersion: monitoring.cattle.io/v1alpha1`, which will deploy the Project Monitoring Stack in a Project Release Namespace (`cattle-project-<id>-monitoring`). 
 
-Cluster admins can now prototype an operator-controlled chart source for those project releases by setting `helmProjectOperator.chartSource.name`, `helmProjectOperator.chartSource.repo`, and `helmProjectOperator.chartSource.version` on the `prometheus-federator` chart (or the corresponding `--managed-chart-*` flags on the binary). When those values are unset, the existing embedded chart path remains the default.
+Cluster admins now need to provide an operator-controlled chart source for those project releases by setting `helmProjectOperator.chartSource.name`, `helmProjectOperator.chartSource.repo`, and `helmProjectOperator.chartSource.version` on the `prometheus-federator` chart (or the corresponding `--managed-chart-*` flags on the binary).
 
 > Note: Since this Project Monitoring Stack deploys Prometheus Operator CRs, an existing Prometheus Operator instance must already be deployed in the cluster for Prometheus Federator to successfully be able to deploy Project Monitoring Stacks. It is recommended to use [`rancher-monitoring`](https://rancher.com/docs/rancher/v2.6/en/monitoring-alerting/) for this. For more information on how the chart works or advanced configurations, please read the [`README.md` on the chart](packages/prometheus-federator/charts/README.md).
 
@@ -65,8 +65,7 @@ Here's a good guide:
 
 ### How do I know what version of Rancher Project Monitoring is used?
 There are a few options depending on where you're working.
-For compiled binaries, you can use the `debug-chart` command to dump the static chart.
-Or, you can check `build.yaml` on the target branch/tag you're curious about.
+Check `build.yaml` on the target branch/tag you are curious about, then configure the corresponding approved chart reference for deployment.
 
 ## Building
 

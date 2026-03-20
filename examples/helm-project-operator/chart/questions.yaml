@@ -20,6 +20,24 @@ questions:
   type: string
   required: false
   group: Namespaces
+- variable: chartSource.name
+  label: Approved Chart Name
+  description: Required with repository URL and version. The example operator now deploys only an approved external chart.
+  type: string
+  required: false
+  group: Managed Chart
+- variable: chartSource.repo
+  label: Approved Chart Repository
+  description: Required. Helm repository URL for the approved external chart.
+  type: string
+  required: false
+  group: Managed Chart
+- variable: chartSource.version
+  label: Approved Chart Version
+  description: Required. Version of the approved external chart to deploy.
+  type: string
+  required: false
+  group: Managed Chart
 - variable: releaseRoleBindings.clusterRoleRefs.admin
   label: Admin ClusterRole
   description: By default, admin selects Project Owners. This can be overridden to a different ClusterRole (e.g. rt-xxxxx)

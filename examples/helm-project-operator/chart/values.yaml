@@ -46,6 +46,13 @@ helmApiVersion: dummy.cattle.io/v1alpha1
 ## User-provided values will be overwritten based on the values provided here
 valuesOverride: {}
 
+## chartSource selects the approved chart source used for managed ProjectHelmChart releases.
+## Embedded charts are no longer shipped by the example operator image.
+chartSource:
+  name: ""
+  repo: ""
+  version: ""
+
 ## projectReleaseNamespaces are auto-generated namespaces that are created to host Helm Releases
 ## managed by this operator on behalf of a ProjectHelmChart
 projectReleaseNamespaces:

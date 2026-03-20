@@ -75,7 +75,7 @@ controllers/
   project/
   ## This is where the underlying context used by all controllers of this operator are registered, all using the same underlying SharedControllerFactory
   controller.go
-  ## This is where the logic for parsing the values.yaml and questions.yaml from an embedded Helm chart (provided as a .tgz.base64 in ChartContent) exists
+  ## This is where the logic for parsing values.yaml and questions.yaml from ChartContent exists when an operator implementation still provides embedded chart content
   parse.go
 ```
 
@@ -115,7 +115,7 @@ If you don't want to run all the steps in CI every time you make a change, you c
 REPO=<my-repo>
 TAG=<my-tag>
 
-./scripts/build-chart && GOOS=linux CGO_ENABLED=0 go build -ldflags "-extldflags -static -s" -o bin/helm-project-operator cmd/helm-project-operator/main.go && REPO=${REPO} TAG=${TAG} make package
+GOOS=linux CGO_ENABLED=0 go build -ldflags "-extldflags -static -s" -o bin/helm-project-operator cmd/helm-project-operator/main.go && REPO=${REPO} TAG=${TAG} make package
 ```
 
 Once the image is successfully packaged, simply run `docker push ${REPO}/helm-project-operator:${TAG}` to push your image to your Docker repository.
@@ -124,5 +124,5 @@ Once the image is successfully packaged, simply run `docker push ${REPO}/helm-pr
 
 1. Ensure that your `KUBECONFIG` environment variable is pointing to your cluster (e.g. `export KUBECONFIG=<path-to-kubeconfig>; kubectl get nodes` should show the nodes of your cluster) and pull in this repository locally
 2. Go to the root of your local copy of this repository and deploy the Helm Project Operator chart as a Helm 3 chart onto your cluster after overriding the image and tag values with your Docker repository and tag: run `helm upgrade --install --set image.repository="${REPO}/helm-project-operator" --set image.tag="${TAG}" --set image.pullPolicy=Always helm-project-operator -n cattle-helm-system charts/helm-project-operator`
-> Note: Why do we set the Image Pull Policy to `Always`? If you update the Docker image on your fork, setting the Image Pull Policy to `Always` ensures that running `kubectl rollout restart -n cattle-helm-system deployment/helm-project-operator` is all you need to do to update your running deployment to the new image, since this would ensure redeploying a deployment triggers a image pull that uses your most up-to-date Docker image. Also, since the underlying Helm chart deployed by the operator (e.g. `project-operator-example`) is directly embedded into the Helm Project Operator image, you also do not need to update the Deployment object itself to see all the HelmCharts in your cluster automatically be updated to the latest embedded version of the chart.
+> Note: Why do we set the Image Pull Policy to `Always`? If you update the Docker image on your fork, setting the Image Pull Policy to `Always` ensures that running `kubectl rollout restart -n cattle-helm-system deployment/helm-project-operator` is all you need to do to update your running deployment to the new image, since this would ensure redeploying a deployment triggers an image pull that uses your most up-to-date Docker image. If your operator depends on an approved chart reference, make sure the corresponding managed-chart settings are updated as well.
 3. Profit!

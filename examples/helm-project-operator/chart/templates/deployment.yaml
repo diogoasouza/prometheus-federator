@@ -33,6 +33,15 @@ spec:
 {{- if .Values.global.cattle.url }}
           - --cattle-url={{ .Values.global.cattle.url }}
 {{- end }}
+{{- if .Values.chartSource.name }}
+          - --managed-chart-name={{ .Values.chartSource.name }}
+{{- end }}
+{{- if .Values.chartSource.repo }}
+          - --managed-chart-repo={{ .Values.chartSource.repo }}
+{{- end }}
+{{- if .Values.chartSource.version }}
+          - --managed-chart-version={{ .Values.chartSource.version }}
+{{- end }}
 {{- if .Values.global.cattle.projectLabel }}
           - --project-label={{ .Values.global.cattle.projectLabel }}
 {{- end }}

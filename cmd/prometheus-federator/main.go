@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "embed"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -11,7 +10,6 @@ import (
 	command "github.com/rancher/prometheus-federator/internal/helm-project-operator/cli"
 	"github.com/rancher/prometheus-federator/internal/helm-project-operator/controllers/common"
 	"github.com/rancher/prometheus-federator/internal/helm-project-operator/operator"
-	"github.com/rancher/prometheus-federator/pkg/debug"
 	"github.com/rancher/prometheus-federator/pkg/version"
 	"github.com/rancher/wrangler/v3/pkg/crd"
 	_ "github.com/rancher/wrangler/v3/pkg/generated/controllers/apiextensions.k8s.io"
@@ -25,16 +23,15 @@ import (
 )
 
 const (
-	// HelmAPIVersion is the spec.helmApiVersion corresponding to the embedded monitoring chart (rancher-project-monitoring)
+	// HelmAPIVersion is the spec.helmApiVersion corresponding to project monitoring releases managed by this operator.
 	HelmAPIVersion = "monitoring.cattle.io/v1alpha1"
 
-	// ReleaseName is the release name this operator uses to prefix releases and project release namespaces created on
-	// deploying the embedded monitoring chart (rancher-project-monitoring)
+	// ReleaseName is the release name this operator uses to prefix managed project monitoring releases.
 	ReleaseName = "monitoring"
 )
 
 var (
-	// SystemNamespaces is the system namespaces scoped for the embedded monitoring chart (rancher-project-monitoring)
+	// SystemNamespaces is the system namespaces scoped for managed project monitoring releases.
 	SystemNamespaces = []string{"kube-system", "cattle-monitoring-system", "cattle-dashboards"}
 
 	debugConfig command.DebugConfig
@@ -46,11 +43,6 @@ type PrometheusFederator struct {
 
 	Kubeconfig string `usage:"Kubeconfig file"`
 }
-
-var (
-	//go:embed fs/rancher-project-monitoring.tgz.base64
-	embeddedChart string
-)
 
 func (f *PrometheusFederator) Run(cmd *cobra.Command, _ []string) error {
 	go func() {
@@ -111,7 +103,6 @@ func (f *PrometheusFederator) Run(cmd *cobra.Command, _ []string) error {
 			HelmAPIVersion:   HelmAPIVersion,
 			ReleaseName:      ReleaseName,
 			SystemNamespaces: SystemNamespaces,
-			ChartContent:     embeddedChart,
 			Singleton:        true, // indicates only one HelmChart can be registered per project defined
 		},
 		RuntimeOptions: f.RuntimeOptions,
@@ -144,6 +135,5 @@ func main() {
 		Version: version.FriendlyVersion(),
 	})
 	cmd = command.AddDebug(cmd, &debugConfig)
-	cmd.AddCommand(debug.ChartDebugSubCommand(embeddedChart))
 	command.Main(cmd)
 }

@@ -72,6 +72,8 @@ var (
 )
 
 var _ = BeforeSuite(func() {
+	os.Setenv("KUBE_FEATURE_WatchListClient", "false")
+
 	Expect(env.Parse(&ts)).To(Succeed(), "Could not parse test spec from environment variables")
 	Expect(ts.Validate()).To(Succeed(), "Invalid input e2e test spec")
 	ctxCa, ca := context.WithCancel(context.Background())

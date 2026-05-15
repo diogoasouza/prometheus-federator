@@ -64,6 +64,8 @@ func (t *TestSpec) Validate() error {
 }
 
 var _ = BeforeSuite(func() {
+	os.Setenv("KUBE_FEATURE_WatchListClient", "false")
+
 	By("verifying helm CLI is version 3")
 	cmd := exec.Command("helm", "version", "--short")
 	output, err := cmd.CombinedOutput()

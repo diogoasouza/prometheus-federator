@@ -21,6 +21,9 @@ linters:
         text: should have comment or be unexported
       - linters:
           - revive
+        text: "var-naming: avoid meaningless package names"
+      - linters:
+          - revive
         path: _test.go
     paths:
       - /zz_generated_*

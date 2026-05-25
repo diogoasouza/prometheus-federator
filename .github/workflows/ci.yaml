@@ -23,9 +23,6 @@ on:
       - 'LICENSE'
 
 env:
-  YQ_VERSION: v4.44.3
-  YQ_CHECKSUM_AMD64: 'a2c097180dd884a8d50c956ee16a9cec070f30a7947cf4ebf87d5f36213e9ed7'
-  YQ_CHECKSUM_ARM64: '0e7e1524f68d91b3ff9b089872d185940ab0fa020a5a9052046ef10547023156'
   CGO_ENABLED : 0
 
 jobs:
@@ -37,11 +34,11 @@ jobs:
           - arm64
     runs-on: ${{ github.repository == 'rancher/prometheus-federator' && format('runs-on,image=ubuntu22-full-{1},runner=4cpu-linux-{1},run-id={0}', github.run_id, matrix.arch) || 'ubuntu-latest' }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name : Set up Go
-        uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
-          go-version: '1.25'
+          go-version: '1.26'
       - name: Check if yq is installed
         id: check_yq
         run: |
@@ -55,12 +52,9 @@ jobs:
       - name : Install YQ
         if: steps.check_yq.outputs.install_yq == 'true'
         run: |
-          sudo wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${{ matrix.arch == 'x64' && 'amd64' || matrix.arch  }} -O /usr/bin/yq
-          if [ "${{ matrix.arch }}" = "x64" ]; then echo "${YQ_CHECKSUM_AMD64}  /usr/bin/yq" | sha256sum -c - ; fi
-          if [ "${{ matrix.arch }}" = "arm64" ]; then echo "${YQ_CHECKSUM_ARM64}  /usr/bin/yq" | sha256sum -c - ; fi
-          sudo chmod +x /usr/bin/yq
+          ./package/install-yq.sh
       - name : Install helm
-        uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
+        uses: azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5.0.0
         with:
           version: 'v3.19.5'
       - name: Run CI

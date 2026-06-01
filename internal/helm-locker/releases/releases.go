@@ -79,9 +79,14 @@ func (g *latestReleaseGetter) Last(namespace, name string) (*releasev1.Release, 
 	if err != nil {
 		return nil, err
 	}
-	r, ok := rel.(*releasev1.Release)
-	if !ok {
-		return nil, fmt.Errorf("unexpected release type %T", rel)
+	switch r := rel.(type) {
+	case *releasev1.Release:
+		return r, nil
+	case releasev1.Release:
+		return &r, nil
+	case nil:
+		return nil, fmt.Errorf("helm storage returned nil release for %s/%s", namespace, name)
+	default:
+		return nil, fmt.Errorf("helm storage returned unexpected type %T for release %s/%s", rel, namespace, name)
 	}
-	return r, nil
 }

@@ -2,8 +2,8 @@ package release
 
 import (
 	v1alpha1 "github.com/rancher/prometheus-federator/internal/helm-locker/apis/helm.cattle.io/v1alpha1"
-	releasev1 "helm.sh/helm/v4/pkg/release/v1"
 	"helm.sh/helm/v4/pkg/release/common"
+	releasev1 "helm.sh/helm/v4/pkg/release/v1"
 )
 
 func newReleaseInfo(release *releasev1.Release) *releaseInfo {

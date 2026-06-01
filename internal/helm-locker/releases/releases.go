@@ -14,33 +14,41 @@ import (
 )
 
 // logrusHandler bridges Helm v4's slog-based storage logger to logrus.
-type logrusHandler struct{}
+type logrusHandler struct {
+	preAttrs []slog.Attr
+}
 
 func (h *logrusHandler) Enabled(_ context.Context, level slog.Level) bool {
 	return level >= slog.LevelDebug
 }
 
 func (h *logrusHandler) Handle(_ context.Context, r slog.Record) error {
-	msg := r.Message
+	fields := make(logrus.Fields)
+	for _, a := range h.preAttrs {
+		fields[a.Key] = a.Value.Any()
+	}
 	r.Attrs(func(a slog.Attr) bool {
-		msg += " " + a.Key + "=" + a.Value.String()
+		fields[a.Key] = a.Value.Any()
 		return true
 	})
+	entry := logrus.WithFields(fields)
 	switch {
 	case r.Level >= slog.LevelError:
-		logrus.Errorf("%s", msg)
+		entry.Error(r.Message)
 	case r.Level >= slog.LevelWarn:
-		logrus.Warnf("%s", msg)
+		entry.Warn(r.Message)
 	case r.Level >= slog.LevelInfo:
-		logrus.Infof("%s", msg)
+		entry.Info(r.Message)
 	default:
-		logrus.Debugf("%s", msg)
+		entry.Debug(r.Message)
 	}
 	return nil
 }
 
-func (h *logrusHandler) WithAttrs(_ []slog.Attr) slog.Handler { return h }
-func (h *logrusHandler) WithGroup(_ string) slog.Handler      { return h }
+func (h *logrusHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	return &logrusHandler{preAttrs: append(h.preAttrs, attrs...)}
+}
+func (h *logrusHandler) WithGroup(_ string) slog.Handler { return h }
 
 type HelmReleaseGetter interface {
 	Last(namespace, name string) (*releasev1.Release, error)

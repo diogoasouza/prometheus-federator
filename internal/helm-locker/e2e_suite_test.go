@@ -66,13 +66,13 @@ func (t *TestSpec) Validate() error {
 var _ = BeforeSuite(func() {
 	os.Setenv("KUBE_FEATURE_WatchListClient", "false")
 
-	By("verifying helm CLI is version 3")
+	By("verifying helm CLI is version 4")
 	cmd := exec.Command("helm", "version", "--short")
 	output, err := cmd.CombinedOutput()
 	Expect(err).NotTo(HaveOccurred(), "Failed to execute helm version command")
 
 	versionStr := strings.TrimSpace(string(output))
-	Expect(versionStr).To(MatchRegexp(`v[34]\.`), "Helm v3 or v4 is required, got: %s", versionStr)
+	Expect(versionStr).To(MatchRegexp(`v4\.`), "Helm v4 is required, got: %s", versionStr)
 
 	ts := TestSpec{}
 	Expect(env.Parse(&ts)).To(Succeed(), "Could not parse test spec from environment variables")

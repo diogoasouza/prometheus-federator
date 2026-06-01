@@ -72,7 +72,7 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred(), "Failed to execute helm version command")
 
 	versionStr := strings.TrimSpace(string(output))
-	Expect(versionStr).To(ContainSubstring("v3."), "Helm v3 is required, got: %s", versionStr)
+	Expect(versionStr).To(MatchRegexp(`v[34]\.`), "Helm v3 or v4 is required, got: %s", versionStr)
 
 	ts := TestSpec{}
 	Expect(env.Parse(&ts)).To(Succeed(), "Could not parse test spec from environment variables")

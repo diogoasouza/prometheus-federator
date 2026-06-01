@@ -112,10 +112,10 @@ var _ = Describe("E2E helm locker operator tests", Ordered, Label("kubernetes"),
 				"--set",
 				"contents=\"abc\"",
 			)
-			err := cmd.Start()
-			Expect(err).NotTo(HaveOccurred(), "Failed to run helm command")
 			cmd.Stdout = GinkgoWriter
 			cmd.Stderr = GinkgoWriter
+			err := cmd.Start()
+			Expect(err).NotTo(HaveOccurred(), "Failed to run helm command")
 			err = cmd.Wait()
 			Expect(err).NotTo(HaveOccurred(), "helm upgrade command had a non-zero exit code")
 
@@ -317,9 +317,10 @@ var _ = Describe("E2E helm locker operator tests", Ordered, Label("kubernetes"),
 					"--set",
 					"contents=\"Updated!\"",
 				)
+				cmd.Stdout = GinkgoWriter
+				cmd.Stderr = GinkgoWriter
 				err := cmd.Start()
 				Expect(err).NotTo(HaveOccurred(), "Failed to run helm command")
-
 				err = cmd.Wait()
 				Expect(err).NotTo(HaveOccurred(), "helm install command had a non-zero exit code")
 

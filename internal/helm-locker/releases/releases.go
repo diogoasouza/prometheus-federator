@@ -1,17 +1,17 @@
 package releases
 
 import (
+	"fmt"
 	"sync"
 
-	"github.com/sirupsen/logrus"
-	rspb "helm.sh/helm/v3/pkg/release"
-	"helm.sh/helm/v3/pkg/storage"
-	"helm.sh/helm/v3/pkg/storage/driver"
+	releasev1 "helm.sh/helm/v4/pkg/release/v1"
+	"helm.sh/helm/v4/pkg/storage"
+	"helm.sh/helm/v4/pkg/storage/driver"
 	"k8s.io/client-go/kubernetes"
 )
 
 type HelmReleaseGetter interface {
-	Last(namespace, name string) (*rspb.Release, error)
+	Last(namespace, name string) (*releasev1.Release, error)
 }
 
 func NewHelmReleaseGetter(k8s kubernetes.Interface) HelmReleaseGetter {
@@ -36,12 +36,19 @@ func (g *latestReleaseGetter) getStore(namespace string) *storage.Storage {
 		return store
 	}
 	store = storage.Init(driver.NewSecrets(g.K8s.CoreV1().Secrets(namespace)))
-	store.Log = logrus.Debugf
 	g.namespacedStorage[namespace] = store
 	return store
 }
 
-func (g *latestReleaseGetter) Last(namespace, name string) (*rspb.Release, error) {
+func (g *latestReleaseGetter) Last(namespace, name string) (*releasev1.Release, error) {
 	store := g.getStore(namespace)
-	return store.Last(name)
+	rel, err := store.Last(name)
+	if err != nil {
+		return nil, err
+	}
+	r, ok := rel.(*releasev1.Release)
+	if !ok {
+		return nil, fmt.Errorf("unexpected release type %T", rel)
+	}
+	return r, nil
 }

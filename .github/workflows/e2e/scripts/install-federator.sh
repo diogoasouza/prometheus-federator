@@ -10,7 +10,7 @@ source "$(pwd)/scripts/util-team-charts"
 
 make package-helm
 
-helm upgrade --install --create-namespace -n cattle-monitoring-system prometheus-federator \
+helm upgrade --install ${HELM_EXTRA_FLAGS} --create-namespace -n cattle-monitoring-system prometheus-federator \
   --set helmProjectOperator.image.repository=${REPO:-rancher}/prometheus-federator \
   --set helmProjectOperator.image.tag=${TAG:-dev} \
   ${cluster_args} \

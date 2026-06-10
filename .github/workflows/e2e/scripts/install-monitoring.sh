@@ -27,7 +27,7 @@ echo "Installing rancher monitoring crd with :"
 
 helm search repo ${HELM_REPO}/rancher-monitoring-crd --versions --max-col-width=0 | head -n 2
 
-helm upgrade --install --create-namespace -n cattle-monitoring-system ${RANCHER_MONITORING_VERSION_HELM_ARGS} rancher-monitoring-crd ${HELM_REPO}/rancher-monitoring-crd
+helm upgrade --install ${HELM_EXTRA_FLAGS} --create-namespace -n cattle-monitoring-system ${RANCHER_MONITORING_VERSION_HELM_ARGS} rancher-monitoring-crd ${HELM_REPO}/rancher-monitoring-crd
 
 echo "Checking installed crd version info:"
 helm list -n cattle-monitoring-system
@@ -54,7 +54,7 @@ esac
 echo "Installing rancher monitoring with :"
 
 helm search repo ${HELM_REPO}/rancher-monitoring --versions --max-col-width=0 | head -n 2
-helm upgrade --install --create-namespace -n cattle-monitoring-system rancher-monitoring ${cluster_args} ${e2e_args} ${RANCHER_HELM_ARGS} ${HELM_REPO}/rancher-monitoring
+helm upgrade --install ${HELM_EXTRA_FLAGS} --create-namespace -n cattle-monitoring-system rancher-monitoring ${cluster_args} ${e2e_args} ${RANCHER_HELM_ARGS} ${HELM_REPO}/rancher-monitoring
 
 echo "Checking installed rancher monitoring versions :"
 helm list -n cattle-monitoring-system

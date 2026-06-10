@@ -41,3 +41,8 @@ else
 fi
 
 RANCHER_HELM_ARGS="${RANCHER_CLUSTER_HELM_ARGS} ${RANCHER_MONITORING_VERSION_HELM_ARGS}"
+
+HELM_EXTRA_FLAGS=""
+if [[ "$(helm version --template='{{.Version}}')" == v4.* ]]; then
+    HELM_EXTRA_FLAGS="--server-side=false"
+fi

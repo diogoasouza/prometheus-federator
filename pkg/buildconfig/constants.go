@@ -3,8 +3,6 @@
 package buildconfig
 
 const (
-	DevChartsBranch                 = "2.15-rpm"
-	DevChartsSource                 = "https://github.com/diogoasouza/ob-team-charts"
 	K3sTestingMaxVersion            = "v1.36.0-k3s1"
 	K3sTestingMinVersion            = "v1.34.7+k3s1"
 	KuberlrVersion                  = "v8"

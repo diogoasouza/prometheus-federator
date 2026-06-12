@@ -44,14 +44,29 @@ helmApiVersion: dummy.cattle.io/v1alpha1
 
 ## valuesOverride overrides values that are set on each ProjectHelmChart deployment on an operator-level
 ## User-provided values will be overwritten based on the values provided here
-valuesOverride: {}
-
+valuesOverride:
+  grafana:
+    image:
+      repository: 'rancher/appco-grafana'
+      tag: '12.3.1-1.12'
+    downloadDashboardsImage:
+      repository: 'rancher/appco-curl'
+      tag: '8.14.1-7.1'
+    initChownData:
+      repository: 'rancher/mirrored-library-busybox'
+      tag: '1.31.1'
+    sidecar:
+      repository: 'rancher/appco-k8s-sidecar'
+      tag: '2.1.2-1.10'
+    imageRenderer:
+      repository: 'rancher/mirrored-grafana-grafana-image-renderer'
+      tag: 'v5.1.0'
 ## chartSource selects the approved chart source used for managed ProjectHelmChart releases.
 ## Embedded charts are no longer shipped by the example operator image.
 chartSource:
-  name: ""
-  repo: ""
-  version: ""
+  name: "rancher-project-monitoring"
+  repo: "https://raw.githubusercontent.com/rancher/ob-team-charts/refs/heads/main"
+  version: "1.0.0"
 
 ## projectReleaseNamespaces are auto-generated namespaces that are created to host Helm Releases
 ## managed by this operator on behalf of a ProjectHelmChart
@@ -79,7 +94,7 @@ releaseRoleBindings:
 
   ## clusterRoleRefs are the ClusterRoles whose RoleBinding or ClusterRoleBindings should determine
   ## the RoleBindings created in the Project Release Namespace
-  ## 
+  ##
   ## By default, these are set to create RoleBindings based on the RoleBindings / ClusterRoleBindings
   ## attached to the default K8s user-facing ClusterRoles of admin, edit, and view.
   ## ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles

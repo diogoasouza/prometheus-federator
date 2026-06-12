@@ -232,6 +232,10 @@ var _ = Describe("E2E helm project operator tests", Ordered, Label("kubernetes")
 				WithValue("image.repository", image),
 				WithValue("image.tag", ts.image.Tag()),
 				WithValue("helmController.enabled", "true"),
+				// Clear default chartSource so the operator uses the embedded example-chart
+				WithValue("chartSource.name", ""),
+				WithValue("chartSource.repo", ""),
+				WithValue("chartSource.version", ""),
 			)
 			cmd, err := helmInstaller.build()
 			Expect(err).To(Succeed())

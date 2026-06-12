@@ -6,6 +6,8 @@ BUILD_CMD_TARGET=${BUILD_CMD_TARGET:-"./cmd/${BUILD_TARGET}/"}
 
 cd $(dirname $0)/..
 
+./scripts/build-chart
+
 echo "Building \`${BUILD_TARGET}\` from \`${BUILD_CMD_TARGET}\`";
 
 mkdir -p build/bin

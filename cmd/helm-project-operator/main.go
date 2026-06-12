@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -28,6 +29,9 @@ var (
 	DummySystemNamespaces = []string{"kube-system"}
 
 	debugConfig command.DebugConfig
+
+	//go:embed fs/example-chart.tgz.base64
+	dummyChart string
 )
 
 type DummyOperator struct {
@@ -54,6 +58,7 @@ func (o *DummyOperator) Run(cmd *cobra.Command, _ []string) error {
 			HelmAPIVersion:   DummyHelmAPIVersion,
 			ReleaseName:      DummyReleaseName,
 			SystemNamespaces: DummySystemNamespaces,
+			ChartContent:     dummyChart,
 			Singleton:        false,
 		},
 		RuntimeOptions: o.RuntimeOptions,

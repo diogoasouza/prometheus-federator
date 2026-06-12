@@ -3,7 +3,7 @@
 ## How does the operator work?
 
 1. On deploying a Helm Project Operator, users can create ProjectHelmCharts CRs with `spec.helmApiVersion` set to `dummy.cattle.io/v1alpha1` in a **Project Registration Namespace (`cattle-project-<id>`)**. 
-2. On seeing each ProjectHelmChartCR, the operator will automatically deploy the embedded Helm chart on the Project Owner's behalf in the **Project Release Namespace (`cattle-project-<id>-dummy`)** based on a HelmChart CR and a HelmRelease CR automatically created by the ProjectHelmChart controller in the **Operator / System Namespace**. 
+2. On seeing each ProjectHelmChartCR, the operator will automatically deploy the approved external chart on the Project Owner's behalf in the **Project Release Namespace (`cattle-project-<id>-dummy`)** based on a HelmChart CR and a HelmRelease CR automatically created by the ProjectHelmChart controller in the **Operator / System Namespace**. 
 3. RBAC will automatically be assigned in the Project Release Namespace to allow users to based on Role created in the Project Release Namespace with a given set of labels; this will be based on RBAC defined on the Project Registration Namespace against the [default Kubernetes user-facing roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles) (see below for more information about configuring RBAC).
 
 ### What is a Project?
@@ -20,9 +20,7 @@ Generally, the best way to think about the ProjectHelmChart model is by comparin
 
 ### Configuring the Helm release created by a ProjectHelmChart
 
-The `spec.values` of this ProjectHelmChart resources will correspond to the `values.yaml` override to be supplied to the underlying Helm chart deployed by the operator on the user's behalf; to see the underlying chart's `values.yaml` spec, either:
-- View to the chart's definition located at [`rancher/helm-project-operator` under `charts/project-operator-example`](https://github.com/rancher/helm-project-operator/blob/main/charts/project-operator-example) (where the chart version will be tied to the version of this operator)
-- Look for the ConfigMap named `dummy.cattle.io.v1alpha1` that is automatically created in each Project Registration Namespace, which will contain both the `values.yaml` and `questions.yaml` that was used to configure the chart (which was embedded directly into the `helm-project-operator` binary).
+The `spec.values` of this ProjectHelmChart resources will correspond to the `values.yaml` override supplied to the approved chart deployed by the operator on the user's behalf. Configure that approved chart source with `chartSource.name`, `chartSource.repo`, and `chartSource.version`.
 
 ### Namespaces
 

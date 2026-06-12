@@ -36,7 +36,7 @@ Once you have made the changes using the rebase script, you will need to manuall
 1. Bump the minor version listed under [`packages/prometheus-federator/charts/Chart.yaml`](../../../packages/prometheus-federator/charts/Chart.yaml) under `appVersion` and `version` and reset the patch version (i.e. `0.1.1` -> `0.2.0`); they should both match.
 1. Update the tag in [`packages/prometheus-federator/charts/values.yaml`](../../../packages/prometheus-federator/charts/values.yaml) under `helmProjectOperator.image.tag` to `v<VERSION>`, where `<VERSION>` is the version you identified in the previous step (i.e. `0.2.0`)
 1. Modify the `version` field under [`packages/rancher-project-monitoring/package.yaml`](../../../packages/rancher-project-monitoring/package.yaml) to the same version from above (i.e. `0.2.0`)
-1. Modify the `VERSION` environment variable under [`scripts/build-chart`](../../../scripts/build-chart) to the same version (i.e. `0.2.0`)
+1. Embedded chart packaging has been removed from this repository, so skip `scripts/build-chart` and instead plan to test the rebased chart by configuring an approved external chart reference.
 1. Run `make charts`; this should produce:
   - `assets/prometheus-federator/prometheus-federator-<VERSION>.tgz`
   - `assets/rancher-project-monitoring/rancher-project-monitoring-<VERSION>.tgz`

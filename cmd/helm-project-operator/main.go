@@ -29,6 +29,7 @@ var (
 	DummySystemNamespaces = []string{"kube-system"}
 
 	debugConfig command.DebugConfig
+
 	//go:embed fs/example-chart.tgz.base64
 	dummyChart string
 )

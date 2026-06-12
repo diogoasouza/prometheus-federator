@@ -1,6 +1,8 @@
 package common
 
 import (
+	"errors"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -22,6 +24,19 @@ func (opts Options) Validate() error {
 
 	// Cross option checks
 
+	if opts.UsesManagedChartReference() {
+		switch {
+		case len(opts.ManagedChartName) == 0:
+			return errors.New("must provide --managed-chart-name when configuring an approved managed chart reference")
+		case len(opts.ManagedChartRepo) == 0:
+			return errors.New("must provide --managed-chart-repo when configuring an approved managed chart reference")
+		case len(opts.ManagedChartVersion) == 0:
+			return errors.New("must provide --managed-chart-version when configuring an approved managed chart reference")
+		}
+	} else if len(opts.ChartContent) == 0 {
+		return errors.New("cannot instantiate Project Operator without either embedded chart content or an approved managed chart reference")
+	}
+
 	if opts.Singleton {
 		logrus.Infof("Note: Operator only supports a single ProjectHelmChart per project registration namespace")
 		if len(opts.ProjectLabel) == 0 {
@@ -37,4 +52,8 @@ func (opts Options) Validate() error {
 	}
 
 	return nil
+}
+
+func (opts Options) UsesManagedChartReference() bool {
+	return len(opts.ManagedChartName) > 0 || len(opts.ManagedChartRepo) > 0 || len(opts.ManagedChartVersion) > 0
 }

@@ -42,9 +42,5 @@ func (opts OperatorOptions) Validate() error {
 		logrus.Infof("Marking the following namespaces as system namespaces: %s", opts.SystemNamespaces)
 	}
 
-	if len(opts.ChartContent) == 0 {
-		return errors.New("cannot instantiate Project Operator without bundling a Helm chart to provide for the HelmChart's spec.ChartContent")
-	}
-
 	return nil
 }

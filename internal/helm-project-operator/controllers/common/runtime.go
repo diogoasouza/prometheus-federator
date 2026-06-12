@@ -39,6 +39,17 @@ type RuntimeOptions struct {
 	// CattleURL is the Rancher URL that this chart has been deployed onto. This is usually provided in Rancher Helm charts as global.cattle.url
 	CattleURL string `usage:"Default Rancher URL to provide to the Helm chart under global.cattle.url" env:"CATTLE_URL"`
 
+	// ManagedChartName identifies the approved chart name to deploy for managed ProjectHelmCharts.
+	// When set together with ManagedChartRepo and ManagedChartVersion, the operator will generate HelmChart resources
+	// that reference this chart instead of the embedded chart payload.
+	ManagedChartName string `usage:"Approved chart name to deploy for managed ProjectHelmCharts instead of the embedded chart" env:"MANAGED_CHART_NAME"`
+
+	// ManagedChartRepo identifies the approved Helm repository to use for ManagedChartName.
+	ManagedChartRepo string `usage:"Approved Helm repository URL to use for the managed chart" env:"MANAGED_CHART_REPO"`
+
+	// ManagedChartVersion identifies the approved version to use for ManagedChartName.
+	ManagedChartVersion string `usage:"Approved chart version to use for the managed chart" env:"MANAGED_CHART_VERSION"`
+
 	// ProjectLabel is the label that identifies projects
 	// Note: this field is optional and ensures that ProjectHelmCharts auto-infer their spec.projectNamespaceSelector
 	// If provided, any spec.projectNamespaceSelector provided will be ignored
@@ -139,6 +150,10 @@ func (opts RuntimeOptions) Validate() error {
 
 	if len(opts.NodeName) > 0 {
 		logrus.Infof("Marking events as being sourced from node %s", opts.NodeName)
+	}
+
+	if len(opts.ManagedChartName) > 0 || len(opts.ManagedChartRepo) > 0 || len(opts.ManagedChartVersion) > 0 {
+		logrus.Infof("Using approved managed chart reference %s from %s at version %s", opts.ManagedChartName, opts.ManagedChartRepo, opts.ManagedChartVersion)
 	}
 
 	if opts.DisableHardening {

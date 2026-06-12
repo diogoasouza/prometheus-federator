@@ -1,56 +1,26 @@
 #!/usr/bin/env bash
 set -e
 
-# This actually prepares a chart for compile time embedding into the resulting binary.
-# This is always required even after splitting charts and app code.
+# Prepares the example-chart for compile-time embedding into the helm-project-operator example binary.
+# The prometheus-federator binary no longer embeds a chart and uses --managed-chart-* flags instead.
+
+if [[ "${BUILD_TARGET}" != "helm-project-operator" ]]; then
+  echo "No embedded chart to build for BUILD_TARGET=${BUILD_TARGET}; skipping."
+  exit 0
+fi
 
 source $(dirname $0)/version
 source $(dirname $0)/util-chart
-source $(dirname $0)/util-rpm-chart
-source $(dirname $0)/util-kuberlr
-source $(dirname $0)/util-team-charts
-
-# We don't do this for helm-locker
-if [[ "${BUILD_TARGET}" == "helm-locker" ]]; then
-  echo "No build-chart for helm-locker; maybe you meant package-helm"
-  exit
-fi
 
 cd $(dirname $0)/..
 
-if [ "$BUILD_TARGET" == "prometheus-federator" ]; then
-  DEFAULT_CHART_TARGET="rancher-project-monitoring"
-elif [ "$BUILD_TARGET" == "helm-project-operator" ]; then
-  DEFAULT_CHART_TARGET="example-chart"
-fi
+CHART=${CHART:-"example-chart"}
 
-CHART=${CHART:-${DEFAULT_CHART_TARGET}}
-
-if [ "$BUILD_TARGET" == "prometheus-federator" ]; then
-  HELM_CHART_VERSION=$RANCHER_PROJECT_MONITORING
-  # Fetch asset from github OB charts repo
-  fetch-team-chart "rancher-project-monitoring" "$RANCHER_PROJECT_MONITORING"
-  CHART_DESTINATION="./build/charts/${CHART}-${CHART_VERSION}.tgz"
-
-  echo "RPM Chart fetched, now preparing for PromFed..."
-  KUBERLR_STABLE=$(find_latest_kuberlr_release $KUBERLR_TARGET)
-  echo "Kuberlr Stable Target: $KUBERLR_STABLE"
-  echo "Will modify Project Monitoring to use desired kuberlr version."
-  expression=".global.kubectl.tag = \"${KUBERLR_STABLE}\""
-  modify_helm_chart_values $CHART_DESTINATION "$expression"
-
-  # Prepare chart for embedding location
-  base64 -i $CHART_DESTINATION > "cmd/prometheus-federator/fs/${CHART}.tgz.base64"
-elif [ "$BUILD_TARGET" == "helm-project-operator" ]; then
-  # Prepare base chart for build
-  clean-old-charts "$CHART"
-  cp -rf "examples/${BUILD_TARGET}/${CHART}" build/charts/
-  CHART_DESTINATION="./build/charts/${CHART}-${HELM_CHART_VERSION}.tgz"
-  # Update the chart placeholders
-  edit-chart "build/charts/${CHART}/Chart.yaml" "${HELM_CHART_VERSION}" "${HELM_IMAGE_TAG}"
-  package-chart "./build/charts/${CHART}" ./build/charts
-  # Prepare chart for embedding location
-  base64 -i $CHART_DESTINATION > "cmd/helm-project-operator/fs/${CHART}.tgz.base64"
-fi
+clean-old-charts "$CHART"
+cp -rf "examples/${BUILD_TARGET}/${CHART}" build/charts/
+CHART_DESTINATION="./build/charts/${CHART}-${HELM_CHART_VERSION}.tgz"
+edit-chart "build/charts/${CHART}/Chart.yaml" "${HELM_CHART_VERSION}" "${HELM_IMAGE_TAG}"
+package-chart "./build/charts/${CHART}" ./build/charts
+base64 -i "$CHART_DESTINATION" > "cmd/helm-project-operator/fs/${CHART}.tgz.base64"
 
 echo "Completed ${CHART} (ver: ${HELM_CHART_VERSION:-"n/a"}) chart build process."
